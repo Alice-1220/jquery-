@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>Ajax add cart html</title>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
+    <style>
+        .wrapper{
+            background:#ccc;
+        }
+        .size{
+            width:80%;
+            height:40%;
+        }
+        .object-fit{
+            width:100%;
+            height:100%;
+            object-fit:cover;
+            /* border:1px solid red; */
+            margin:0 auto;
+        }
+
+    </style>
+  </head>
+  <body>
+      <div class="wrapper">
+      <div class="container">
+          <div class="row d-flex" id="fruitList">
+            <!-- <div class="col-sm-3 mb-2">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <figure class="size">
+                            <img src="./img/item-apple.jpg" alt="" class="object-fit">
+                        </figure>
+                        <h5 >Fruit</h5>
+                        <h5 >Price</h5>
+                        <button type="button" class="btn btn-primary"><i class="fas fa-shopping-cart"></i></button>
+                    </div>
+                </div>
+            </div> -->
+          </div>
+      </div>
+      <div class="container">
+            <div class="row justify-content-center" id="">
+                <div class="col-sm-6 mb-2">
+                    <div class="card">
+                        <div class="card-body">          
+                            <table class="table table-bordered-horizontal ">
+                                <thead>
+                                    <tr><h3 class="text-left">購物車</h1></tr>
+                                    <tr>
+                                        <th>品名</th>
+                                        <th>單價</th>
+                                        <th>數量</th>
+                                        <th>小計</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+
+                                    <tr id="final"> 
+                                        <td colspan="4" class="text-right">總價：<span type="text" id="total">0</span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <button type="button" class="btn btn-info w-100" id="pay">結帳</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+      </div>  
+    </div>
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script
+    src="http://code.jquery.com/jquery-3.5.1.min.js"
+    integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0="
+    crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    <script>
+        $.ajax({
+            method:"GET",
+            url:"food.json",
+            dataType:"json"
+        })
+        .done(function(msg){
+            msg.forEach(function(fruit){
+                let newRow = `<div class="col-sm-3 mb-2 d-flex my-3">
+                <div class="card flex-grow-1">
+                    <div class="card-body text-center">
+                        <figure class="size">
+                            <img src="./img/${fruit.image}" alt="" class="object-fit image-fluid">
+                        </figure>
+                        <h5 class="text-left">${fruit.name}</h5>
+                        <h5 style="color:red" class="text-left">$${fruit.price}</h5>
+                        <button type="button" class="btn btn-info float-right fruit-btn" data-name="${fruit.name}" data-price="${fruit.price}"><i class="fas fa-shopping-cart"></i></button>
+                    </div>
+                </div>
+            </div>`
+                $("#fruitList").append(newRow)
+            })
+            // .fail(function(){
+
+            // })
+            // .always(function(){
+
+            // });
+        })
+        $("#fruitList").on("click change",".fruit-btn",function(){
+            let dataName = $(this).data("name")
+            // console.log(dataName)
+            let dataPrice = $(this).data("price")
+            // console.log(dataPrice)
+            let chooseFruit = `<tr class="buy" id="${dataName}">
+                <td class="name">${dataName}</td>
+                <td class="price">${dataPrice}</td>
+                <td><input type="number" class="quantity text-right"></td>
+                <td><span class="sum"></span></td>
+            </tr>`
+            // console.log($(`#${dataName}`).length)
+            if($(`#${dataName}`).length){
+                // console.log("hi")
+                let plus = Number($(`#${dataName}`).find(".quantity").val())+1
+                $(`#${dataName}`).find(".quantity").val(plus)
+
+                
+                let price = Number($(`#${dataName}`).find(".price").text())
+                // console.log(price)
+                let quantity = Number($(`#${dataName}`).find(".quantity").val())
+                // console.log(typeof(quantity))
+                $(`#${dataName}`).find(".sum").text(price*quantity)
+
+                let total = 0
+                $(".sum").each(function(){
+                    total += Number($(this).text())
+                })
+                $("#total").text(total)
+
+            }else{
+                $(chooseFruit).insertBefore("#final")
+            }
+            // $(`#${dataName}`).find(".quantity").val()
+        })
+        // console.log($("#蘋果").find(".quantity").val())
+        $("tbody").on("keyup change",".quantity",function(event){
+            $(this).val($(this).val().replace(/[^\d].+/, ""));
+            if ((event.which < 48 || event.which > 57)) {
+                event.preventDefault();
+            }
+            let row = $(this).closest("tr")
+            let price = Number(row.find(".price").text())
+            // console.log(price)
+            let quantity = Number(row.find(".quantity").val())
+            // console.log(typeof(quantity))
+            row.find(".sum").text(price*quantity)
+
+            let total = 0
+            $(".sum").each(function(){
+                total += Number($(this).text())
+            })
+            $("#total").text(total)
+        })
+
+
+    </script>
+  </body>
+</html>
